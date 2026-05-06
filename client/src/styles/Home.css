@@ -1,0 +1,128 @@
+/* Container */
+.home-container {
+  padding: 2rem;
+  color: #eee;
+}
+
+
+
+/* Page Heading */
+.home-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Input + Button Row */
+.home-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.home-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #111;
+  color: #eee;
+}
+
+.home-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #1e293b;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.home-button:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.home-message {
+  margin-top: 8px;
+}
+
+/* Result Box */
+.analysis-box {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: #0b0b0b;
+}
+
+/* Analysis Header Row */
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Hostname */
+.analysis-hostname {
+  margin: 0;
+}
+
+/* Badges */
+.badge {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.badge-good {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.badge-warn {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.badge-bad {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Report controls */
+.report-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.report-controls select {
+  padding: 5px;
+}
+
+/* Divider */
+.analysis-divider {
+  border-color: #222;
+  margin: 12px 0;
+}
+
+/* Details grid */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.analysis-grid h4 {
+  margin-bottom: 6px;
+}
+
+.analysis-grid ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.analysis-grid li {
+  margin-bottom: 4px;
+}

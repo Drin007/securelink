@@ -1,0 +1,64 @@
+.navbar {
+  width: 100%;
+  background-color: #0f172a;  /* Dark navy */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  box-sizing: border-box;
+
+  /* Sticky at top */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  /* Optional subtle shadow for depth */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Push page content down so it’s not hidden under navbar */
+body {
+  padding-top: 60px; /* Adjust if navbar height changes */
+}
+
+/* Logo */
+.nav-logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Nav links container */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #60a5fa; /* Light blue hover */
+}
+
+/* Logout button */
+.nav-links button {
+  background-color: #1e293b;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+}
+
+.nav-links button:hover {
+  background-color: #334155;
+}

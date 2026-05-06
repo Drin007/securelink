@@ -1,0 +1,116 @@
+/* NAVIGATION BAR */
+.navbar {
+  background: #1e293b;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+}
+.nav-logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+.nav-links a {
+  color: white;
+  margin-left: 16px;
+  text-decoration: none;
+}
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+/* PAGE LAYOUT */
+.reports-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+}
+.reports-heading {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* FORM STYLING */
+.report-form {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+.report-form input,
+.report-form select,
+.report-form button {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+.report-form button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.report-form button:hover {
+  background: #1d4ed8;
+}
+
+/* FILTERS */
+.filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+.filters select,
+.search-bar {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+/* STATUS BADGES */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+/* TABLE */
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: auto;
+}
+.reports-table th,
+.reports-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+.reports-table th {
+  background: #f1f5f9;
+}
+.row-phishing {
+  background: #621919;
+}
+.row-malware {
+  background: #442f14;
+}
+.row-scam {
+  background: #242481;
+}
+
+/* MESSAGES */
+.message {
+  color: green;
+  text-align: center;
+}
+.error {
+  color: red;
+  text-align: center;
+}
+.no-data {
+  text-align: center;
+  font-style: italic;
+}
