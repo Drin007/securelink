@@ -1,8 +1,9 @@
 // ... imports stay the same
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import "../styles/Reports.css"; // External CSS
+import "../styles/Reports.css";
 
+const API = import.meta.env.VITE_API_URL;
 
 function StatusBadge({ reason }) {
   const statusColors = {
