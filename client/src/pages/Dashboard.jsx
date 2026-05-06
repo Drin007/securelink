@@ -15,7 +15,7 @@ function Dashboard() {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "http://localhost:3000/api/scan/history",
+          "https://securelink-backend-ohtu.onrender.com/api/scan/history",
           {
             headers: {
               Authorization: `Bearer ${token}`

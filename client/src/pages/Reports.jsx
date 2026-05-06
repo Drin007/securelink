@@ -36,7 +36,7 @@ function Reports() {
   const fetchReports = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:3000/api/reports", {
+      const res = await axios.get("https://securelink-backend-ohtu.onrender.com/api/reports", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReports(res.data);
@@ -56,7 +56,7 @@ function Reports() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:3000/api/reports",
+        "https://securelink-backend-ohtu.onrender.com/api/reports",
         { url, reason, priority },
         { headers: { Authorization: `Bearer ${token}` } }
       );

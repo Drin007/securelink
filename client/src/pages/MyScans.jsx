@@ -11,7 +11,7 @@ const MyScans = () => {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(
-          'http://localhost:3000/api/scan/history',
+          'https://securelink-backend-ohtu.onrender.com/api/scan/history',
           {
             headers: {
               Authorization: `Bearer ${token}`

@@ -17,7 +17,7 @@ function Home() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:3000/api/check-url",
+        "https://securelink-backend-ohtu.onrender.com/api/check-url",
         { url },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -39,7 +39,7 @@ function Home() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:3000/api/reports",
+        "https://securelink-backend-ohtu.onrender.com/api/reports",
         { url, reason: reportReason },
         { headers: { Authorization: `Bearer ${token}` } },
       );
