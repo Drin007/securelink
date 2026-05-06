@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import "../styles/Reports.css"; // External CSS
 
+
 function StatusBadge({ reason }) {
   const statusColors = {
     phishing: { backgroundColor: "#dc2626", color: "white" },
@@ -32,11 +33,12 @@ function Reports() {
   const [filterReason, setFilterReason] = useState("all");
   const [sortOrder, setSortOrder] = useState("newest");
   const [searchTerm, setSearchTerm] = useState("");
+  
 
   const fetchReports = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("https://securelink-backend-ohtu.onrender.com/api/reports", {
+      const res = await axios.get(`${API}/api/reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReports(res.data);
@@ -56,7 +58,7 @@ function Reports() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "https://securelink-backend-ohtu.onrender.com/api/reports",
+        `${API}/api/reports`,
         { url, reason, priority },
         { headers: { Authorization: `Bearer ${token}` } }
       );

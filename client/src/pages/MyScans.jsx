@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+const API = import.meta.env.VITE_API_URL;
 
 const MyScans = () => {
   const [scans, setScans] = useState([]);
   const [error, setError] = useState('');
+  
 
   useEffect(() => {
     const fetchScans = async () => {
@@ -11,7 +13,7 @@ const MyScans = () => {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(
-          'https://securelink-backend-ohtu.onrender.com/api/scan/history',
+          `${API}/api/scan/history`,
           {
             headers: {
               Authorization: `Bearer ${token}`

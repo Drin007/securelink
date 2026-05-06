@@ -2,12 +2,15 @@ import { useState } from "react";
 import axios from "axios";
 import "../styles/Home.css";
 
+const API = import.meta.env.VITE_API_URL;
+
 function Home() {
   const [url, setUrl] = useState("");
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [reportReason, setReportReason] = useState("Phishing");
   const [msg, setMsg] = useState("");
+  
 
   const scan = async () => {
     if (!url) return;
@@ -17,7 +20,7 @@ function Home() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "https://securelink-backend-ohtu.onrender.com/api/check-url",
+        `${API}/api/check-url`,
         { url },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -39,7 +42,7 @@ function Home() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "https://securelink-backend-ohtu.onrender.com/api/reports",
+        `${API}/api/reports`,
         { url, reason: reportReason },
         { headers: { Authorization: `Bearer ${token}` } },
       );
