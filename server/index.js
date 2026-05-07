@@ -31,12 +31,6 @@ app.use(cors({
   credentials: true
 }));
 
-
-// app.use(cors({
-//   origin: true,
-//   credentials: true
-// }));
-
 app.use(express.json());
 
 app.use('/api', urlRoutes);
@@ -45,7 +39,7 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/scan', scanRoutes);
 
-app.use('/api/reports', reportRoutes); // this is added
+app.use('/api/reports', reportRoutes); 
 
 
 const PORT = process.env.PORT || 3000;
@@ -55,7 +49,7 @@ app.get("/", (req, res) => {
 });
 
 loadOpenPhish();
-setInterval(loadOpenPhish, 60 * 60 * 1000); // refresh every 1h
+setInterval(loadOpenPhish, 60 * 60 * 1000); 
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

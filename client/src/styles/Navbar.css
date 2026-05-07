@@ -1,64 +1,75 @@
 .navbar {
-  width: 100%;
-  background-color: #0f172a;  /* Dark navy */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 2rem;
-  box-sizing: border-box;
-
-  /* Sticky at top */
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
+  width: 100%;
+  height: var(--nav-h);
   z-index: 1000;
-
-  /* Optional subtle shadow for depth */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--page-pad);
+  background: rgba(8,10,15,0.7);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
 }
 
-/* Push page content down so it’s not hidden under navbar */
-body {
-  padding-top: 60px; /* Adjust if navbar height changes */
+.navbar--scrolled {
+  background: rgba(8,10,15,0.92);
+  border-bottom-color: var(--border);
 }
 
 /* Logo */
 .nav-logo {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: white;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  text-decoration: none;
 }
+.nav-logo__icon { font-size: 1.3rem; }
+.nav-logo__text {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.nav-logo__accent { color: var(--accent2); }
 
-/* Nav links container */
+/* Links */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.25rem;
 }
 
-.nav-links a {
-  color: #cbd5e1;
+.nav-link {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
   text-decoration: none;
-  transition: color 0.2s ease;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+.nav-link:hover { color: var(--text); background: var(--surface2); }
+.nav-link--active { color: var(--text); }
+
+.nav-cta { margin-left: 0.5rem; font-size: 13px; padding: 0.5rem 1.1rem; }
+
+.nav-logout {
+  margin-left: 0.5rem;
+  font-size: 13px;
+  padding: 0.5rem 1.1rem;
 }
 
-.nav-links a:hover {
-  color: #60a5fa; /* Light blue hover */
-}
-
-/* Logout button */
-.nav-links button {
-  background-color: #1e293b;
-  border: none;
-  padding: 0.5rem 0.9rem;
-  border-radius: 6px;
-  cursor: pointer;
-  color: white;
-}
-
-.nav-links button:hover {
-  background-color: #334155;
+/* Mobile */
+@media (max-width: 600px) {
+  .navbar { padding: 0 1.25rem; }
+  .nav-logo__text { font-size: 0.95rem; }
+  .nav-links { gap: 0; }
+  .nav-link { font-size: 12px; padding: 0.4rem 0.6rem; }
+  .nav-cta, .nav-logout { margin-left: 0.25rem; padding: 0.45rem 0.75rem; font-size: 12px; }
 }

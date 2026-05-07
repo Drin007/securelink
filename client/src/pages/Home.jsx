@@ -2,14 +2,24 @@ import { useState } from "react";
 import API from "../utils/api";
 import "../styles/Home.css";
 
+const Badge = ({ children, type }) => (
+  <span className={`badge badge-${type}`}>{children}</span>
+);
+
+const InfoRow = ({ label, value }) => (
+  <div className="info-row">
+    <span className="info-label">{label}</span>
+    <span className="info-value">{value || "—"}</span>
+  </div>
+);
 
 function Home() {
-  const [url, setUrl] = useState("");
-  const [analysis, setAnalysis] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [url, setUrl]               = useState("");
+  const [analysis, setAnalysis]     = useState(null);
+  const [loading, setLoading]       = useState(false);
   const [reportReason, setReportReason] = useState("Phishing");
-  const [msg, setMsg] = useState("");
-  
+  const [msg, setMsg]               = useState("");
+  const [msgType, setMsgType]       = useState(""); // "ok" | "err"
 
   const scan = async () => {
     if (!url) return;
@@ -17,18 +27,16 @@ function Home() {
     setAnalysis(null);
     setMsg("");
     try {
-
-      const res = await API.post("/api/check-url", { url } );
+      const res = await API.post("/api/check-url", { url });
       setAnalysis(res.data.analysis);
-
     } catch (e) {
       if (e.response?.status === 401) {
         localStorage.removeItem("token");
         window.location.href = "/login";
         return;
       }
-
       setMsg(e.response?.data?.message || "Scan failed");
+      setMsgType("err");
     } finally {
       setLoading(false);
     }
@@ -36,10 +44,9 @@ function Home() {
 
   const report = async () => {
     try {
-
-      await API.post("/api/reports", { url , reason: reportReason,});
+      await API.post("/api/reports", { url, reason: reportReason });
       setMsg("Reported successfully");
-
+      setMsgType("ok");
     } catch (e) {
       if (e.response?.status === 401) {
         localStorage.removeItem("token");
@@ -47,210 +54,149 @@ function Home() {
         return;
       }
       setMsg("Report failed");
-      
+      setMsgType("err");
     }
   };
 
-  const Badge = ({ children, type }) => (
-    <span
-      style={{
-        padding: "2px 8px",
-        borderRadius: 8,
-        fontSize: 12,
-        background:
-          type === "good"
-            ? "rgba(16,185,129,.15)"
-            : type === "warn"
-              ? "rgba(245,158,11,.15)"
-              : "rgba(239,68,68,.15)",
-        color:
-          type === "good" ? "#10b981" : type === "warn" ? "#f59e0b" : "#ef4444",
-      }}
-    >
-      {children}
-    </span>
-  );
+  const handleKey = (e) => { if (e.key === "Enter") scan(); };
+
+  const isSafe = analysis?.status === "Safe";
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-        {" "}
-        🔗 Scan a URL here :{" "}
-      </h1>
+    <main className="page home">
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        <input
-          type="url"
-          placeholder="Enter a link to scan"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          style={{
-            flex: 1,
-            padding: 10,
-            borderRadius: 8,
-            border: "1px solid #333",
-            background: "#111",
-            color: "#eee",
-          }}
-        />
-        <button
-          onClick={scan}
-          disabled={loading}
-          style={{ padding: "10px 16px", borderRadius: 8 }}
-        >
-          {loading ? "Scanning..." : "Scan"}
-        </button>
-      </div>
+      {/* ── Hero ── */}
+      <section className="hero">
+        <p className="hero__eyebrow">URL Safety Scanner</p>
+        <h1 className="hero__title">Is this link safe<span className="hero__dot">?</span></h1>
+        <p className="hero__sub">
+          Paste any URL and get an instant threat analysis — SSL, domain age,
+          phishing signals, and more.
+        </p>
 
-      {msg && <p style={{ marginTop: 8 }}>{msg}</p>}
-
-      {analysis && (
-        <div
-          style={{
-            marginTop: 20,
-            padding: 16,
-            border: "1px solid #333",
-            borderRadius: 12,
-            background: "#0b0b0b",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+        <div className="scan-bar">
+          <div className="scan-bar__input-wrap">
+            <span className="scan-bar__icon">🔗</span>
+            <input
+              type="url"
+              placeholder="https://example.com"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={handleKey}
+              className="scan-bar__input"
+            />
+          </div>
+          <button
+            onClick={scan}
+            disabled={loading}
+            className="btn btn-primary scan-bar__btn"
           >
-            <div>
-              <h3 style={{ margin: 0 }}>{analysis.hostname}</h3>
-              <div style={{ marginTop: 6 }}>
-                <Badge type={analysis.status === "Safe" ? "good" : "bad"}>
-                  {analysis.status}
-                </Badge>{" "}
-                {analysis.threatType && (
-                  <Badge type="bad">{analysis.threatType}</Badge>
-                )}{" "}
-                {typeof analysis.score === "number" && (
-                  <Badge type={analysis.score >= 60 ? "good" : "bad"}>
-                    Score: {analysis.score}
-                  </Badge>
-                )}
-              </div>
-            </div>
+            {loading ? (
+              <><span className="spinner" /> Scanning…</>
+            ) : "Scan URL"}
+          </button>
+        </div>
 
-            {/* Quick report */}
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <select
-                value={reportReason}
-                onChange={(e) => setReportReason(e.target.value)}
-              >
-                <option value="Phishing">Phishing</option>
-                <option value="Fake Store">Fake Store</option>
-                <option value="Malware">Malware</option>
-                <option value="Scam">Scam</option>
-                <option value="Other">Other</option>
-              </select>
-              <button onClick={report}>Report</button>
+        {msg && (
+          <p className={`home-msg home-msg--${msgType}`}>{msg}</p>
+        )}
+      </section>
+
+      {/* ── Result ── */}
+      {analysis && (
+        <section className="result card">
+
+          {/* Header */}
+          <div className="result__header">
+            <div className="result__title-row">
+              <div className={`result__status-dot result__status-dot--${isSafe ? 'safe' : 'danger'}`} />
+              <h2 className="result__hostname">{analysis.hostname}</h2>
+            </div>
+            <div className="result__badges">
+              <Badge type={isSafe ? "safe" : "danger"}>{analysis.status}</Badge>
+              {analysis.threatType && <Badge type="danger">{analysis.threatType}</Badge>}
+              {typeof analysis.score === "number" && (
+                <Badge type={analysis.score >= 60 ? "safe" : "danger"}>
+                  Score {analysis.score}
+                </Badge>
+              )}
             </div>
           </div>
 
-          <hr style={{ borderColor: "#222", margin: "12px 0" }} />
+          {/* Quick report bar */}
+          <div className="result__report-bar">
+            <span className="result__report-label">Flag this URL:</span>
+            <select
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+            >
+              <option>Phishing</option>
+              <option>Fake Store</option>
+              <option>Malware</option>
+              <option>Scam</option>
+              <option>Other</option>
+            </select>
+            <button onClick={report} className="btn btn-ghost">Report</button>
+          </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2,minmax(0,1fr))",
-              gap: 12,
-            }}
-          >
-            <div>
-              <h4>Network</h4>
-              <ul>
-                <li>
-                  <b>IP:</b> {analysis.ip || "-"}
-                </li>
-                <li>
-                  <b>Country/Region:</b> {analysis.country || "-"}{" "}
-                  {analysis.regionName ? `• ${analysis.regionName}` : ""}
-                </li>
-                <li>
-                  <b>ISP:</b> {analysis.isp || "-"}
-                </li>
-              </ul>
+          <hr className="divider" />
+
+          {/* Details grid */}
+          <div className="detail-grid">
+
+            <div className="detail-section">
+              <h4 className="detail-section__title">Network</h4>
+              <InfoRow label="IP"             value={analysis.ip} />
+              <InfoRow label="Country"        value={[analysis.country, analysis.regionName].filter(Boolean).join(" · ")} />
+              <InfoRow label="ISP"            value={analysis.isp} />
             </div>
 
-            <div>
-              <h4>Domain</h4>
-              <ul>
-                <li>
-                  <b>Age:</b>{" "}
-                  {analysis.domainAgeDays != null
-                    ? `${Math.floor(analysis.domainAgeDays)} days`
-                    : "Unknown"}
-                </li>
-                <li>
-                  <b>TLD Suspicious:</b>{" "}
-                  {analysis.checks?.suspiciousTld ? "Yes" : "No"}
-                </li>
-                <li>
-                  <b>HTTPS:</b> {analysis.checks?.https ? "Yes" : "No"}
-                </li>
-              </ul>
+            <div className="detail-section">
+              <h4 className="detail-section__title">Domain</h4>
+              <InfoRow
+                label="Age"
+                value={analysis.domainAgeDays != null
+                  ? `${Math.floor(analysis.domainAgeDays)} days`
+                  : "Unknown"}
+              />
+              <InfoRow label="TLD Suspicious" value={analysis.checks?.suspiciousTld ? "Yes" : "No"} />
+              <InfoRow label="HTTPS"          value={analysis.checks?.https ? "Yes" : "No"} />
             </div>
 
-            <div>
-              <h4>SSL</h4>
-              {analysis.ssl ? (
-                <ul>
-                  <li>
-                    <b>Issuer:</b> {analysis.ssl.issuerCN || "-"}
-                  </li>
-                  <li>
-                    <b>Subject:</b> {analysis.ssl.subjectCN || "-"}
-                  </li>
-                  <li>
-                    <b>Valid to:</b>{" "}
-                    {analysis.ssl.validTo
-                      ? new Date(analysis.ssl.validTo).toLocaleString()
-                      : "-"}
-                  </li>
-                  <li>
-                    <b>Days left:</b> {analysis.ssl.daysRemaining ?? "-"}
-                  </li>
-                  <li>
-                    <b>Expired:</b> {analysis.checks?.sslExpired ? "Yes" : "No"}
-                  </li>
-                  <li>
-                    <b>Self-signed:</b>{" "}
-                    {analysis.checks?.sslSelfSigned ? "Yes" : "No"}
-                  </li>
-                </ul>
-              ) : (
-                <p>— Not available (non-HTTPS or handshake failed)</p>
+            <div className="detail-section">
+              <h4 className="detail-section__title">SSL Certificate</h4>
+              {analysis.ssl ? <>
+                <InfoRow label="Issuer"    value={analysis.ssl.issuerCN} />
+                <InfoRow label="Subject"   value={analysis.ssl.subjectCN} />
+                <InfoRow label="Valid to"  value={analysis.ssl.validTo ? new Date(analysis.ssl.validTo).toLocaleDateString() : null} />
+                <InfoRow label="Days left" value={analysis.ssl.daysRemaining} />
+                <InfoRow label="Expired"   value={analysis.checks?.sslExpired ? "Yes" : "No"} />
+                <InfoRow label="Self-signed" value={analysis.checks?.sslSelfSigned ? "Yes" : "No"} />
+              </> : (
+                <p className="text-muted" style={{ fontSize: 13, marginTop: 6 }}>Not available — non-HTTPS or handshake failed</p>
               )}
             </div>
 
-            <div>
-              <h4>Signals</h4>
-              <ul>
-                <li>
-                  <b>Google Safe Browsing:</b>{" "}
-                  {analysis.checks?.googleSafeBrowsing ? "⚠️ Flagged" : "Clear"}
-                </li>
-                <li>
-                  <b>OpenPhish:</b>{" "}
-                  {analysis.checks?.openPhish ? "⚠️ Listed" : "Clear"}
-                </li>
-                <li>
-                  <b>Suspicious keyword:</b>{" "}
-                  {analysis.checks?.keyword ? "Yes" : "No"}
-                </li>
-              </ul>
+            <div className="detail-section">
+              <h4 className="detail-section__title">Threat Signals</h4>
+              <InfoRow
+                label="Google Safe Browsing"
+                value={analysis.checks?.googleSafeBrowsing ? "⚠ Flagged" : "Clear"}
+              />
+              <InfoRow
+                label="OpenPhish"
+                value={analysis.checks?.openPhish ? "⚠ Listed" : "Clear"}
+              />
+              <InfoRow
+                label="Suspicious keyword"
+                value={analysis.checks?.keyword ? "Yes" : "No"}
+              />
             </div>
+
           </div>
-        </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 }
 

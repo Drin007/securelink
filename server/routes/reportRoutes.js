@@ -1,25 +1,20 @@
 const express = require('express');
 const Report = require('../models/Report');
-const { reportToGoogleSafeBrowsing } = require('../utils/reportToCybercrime'); // new utility
+const protect = require('../middleware/authMiddleware');
+const { reportToGoogleSafeBrowsing } = require('../utils/reportToCybercrime');
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', protect, async (req, res) => {
   try {
-    const { url, reason, reportedBy, priority } = req.body;
+    const { url, reason, priority } = req.body;
 
     if (!url) {
       return res.status(400).json({ message: 'URL is required' });
     }
 
-    // 1️⃣ Save in your database
-    const newReport = new Report({ url, reason, reportedBy });
+    const newReport = new Report({ url, reason, reportedBy: req.user._id });
     await newReport.save();
 
-    // 2️⃣ Optionally forward to Google Safe Browsing if priority is high
-    // if (priority && priority.toLowerCase() === 'high') {
-    //   const result = await reportToGoogleSafeBrowsing(url);
-    //   console.log('📤 Sent to Google Safe Browsing:', result);
-    // }
 
     console.log(`🚨 Report received for: ${url}`);
     res.status(201).json({ message: 'Report submitted successfully' });
@@ -29,7 +24,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     const reports = await Report.find()
       .populate('reportedBy', 'email')

@@ -1,222 +1,206 @@
-// ... imports stay the same
 import { useEffect, useState, useMemo } from "react";
-// import axios from "axios";
+import API from "../utils/api";
 import "../styles/Reports.css";
 
-// const API = import.meta.env.VITE_API_URL;
-
-import API from "../utils/api";
+const reasonColors = {
+  phishing:    { bg: "#dc2626", color: "#fff" },
+  malware:     { bg: "#ea580c", color: "#fff" },
+  "fake store":{ bg: "#ca8a04", color: "#fff" },
+  scam:        { bg: "#7c3aed", color: "#fff" },
+  other:       { bg: "#475569", color: "#fff" },
+};
 
 function StatusBadge({ reason }) {
-  const statusColors = {
-    phishing: { backgroundColor: "#dc2626", color: "white" },
-    malware: { backgroundColor: "#ea580c", color: "white" },
-    "fake store": { backgroundColor: "#eab308", color: "black" },
-    scam: { backgroundColor: "#774b34ff", color: "white" },
-    other: { backgroundColor: "#6b7280", color: "white" },
-  };
-  const key = reason?.toLowerCase() || "other";
+  const key    = reason?.toLowerCase() || "other";
+  const styles = reasonColors[key] || reasonColors.other;
   return (
-    <span
-      className="status-badge"
-      style={statusColors[key] || statusColors.other}
-    >
-      {reason || "Unknown"}
-    </span>
+    <span className="status-badge" style={styles}>{reason || "Unknown"}</span>
   );
 }
 
 function Reports() {
-  const [reports, setReports] = useState([]);
-  const [error, setError] = useState("");
-  const [url, setUrl] = useState("");
-  const [reason, setReason] = useState("Phishing");
-  const [priority, setPriority] = useState("low"); // NEW
-  const [message, setMessage] = useState("");
+  const [reports, setReports]       = useState([]);
+  const [error, setError]           = useState("");
+  const [url, setUrl]               = useState("");
+  const [reason, setReason]         = useState("Phishing");
+  const [priority, setPriority]     = useState("low");
+  const [message, setMessage]       = useState("");
+  const [msgType, setMsgType]       = useState("");
   const [filterReason, setFilterReason] = useState("all");
-  const [sortOrder, setSortOrder] = useState("newest");
+  const [sortOrder, setSortOrder]   = useState("newest");
   const [searchTerm, setSearchTerm] = useState("");
-  
 
   const fetchReports = async () => {
     try {
       const res = await API.get("/api/reports");
-
       setReports(res.data);
     } catch (err) {
-  if (err.response?.status === 401) {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-    return;
-  }
-
-  setError(err.response?.data?.msg || "Failed to load reports");
-}
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
+      }
+      setError(err.response?.data?.msg || "Failed to load reports");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
     try {
-      await API.post("/api/reports", {
-  url,
-  reason,
-  priority,
-});
-
+      await API.post("/api/reports", { url, reason, priority });
       setMessage("Report submitted successfully");
-
-      // ✅ If high priority, open cybercrime portal in new tab
+      setMsgType("ok");
       if (priority === "high") {
         window.open("https://cybercrime.gov.in/Webform/Index.aspx", "_blank");
       }
-
       setUrl("");
       setPriority("low");
       fetchReports();
     } catch (err) {
-  if (err.response?.status === 401) {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-    return;
-  }
-
-  setMessage("Failed to submit report");
-}
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
+      }
+      setMessage("Failed to submit report");
+      setMsgType("err");
+    }
   };
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
+  useEffect(() => { fetchReports(); }, []);
 
   const filteredReports = useMemo(() => {
     let data = [...reports];
-
-    if (filterReason !== "all") {
-      data = data.filter((r) => r.reason?.toLowerCase() === filterReason);
-    }
-    if (searchTerm.trim() !== "") {
-      data = data.filter((r) =>
-        r.url.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    if (sortOrder === "newest") {
-      data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    } else if (sortOrder === "oldest") {
-      data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    }
+    if (filterReason !== "all")
+      data = data.filter(r => r.reason?.toLowerCase() === filterReason);
+    if (searchTerm.trim())
+      data = data.filter(r => r.url.toLowerCase().includes(searchTerm.toLowerCase()));
+    data.sort((a, b) =>
+      sortOrder === "newest"
+        ? new Date(b.createdAt) - new Date(a.createdAt)
+        : new Date(a.createdAt) - new Date(b.createdAt)
+    );
     return data;
   }, [reports, filterReason, sortOrder, searchTerm]);
 
   return (
-    <div>
-      <div className="reports-container">
-        <h2 className="reports-heading">🚨 Reported Sites</h2>
+    <main className="page reports-page">
 
-        {/* New Report Form */}
-        <form onSubmit={handleSubmit} className="report-form">
-          <input
-            type="url"
-            placeholder="URL to report"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-          />
-          <select value={reason} onChange={(e) => setReason(e.target.value)}>
-            <option value="Phishing">Phishing</option>
-            <option value="Fake Store">Fake Store</option>
-            <option value="Malware">Malware</option>
-            <option value="Other">Other</option>
-          </select>
+      <div className="reports__header">
+        <p className="page-eyebrow">Community</p>
+        <h1 className="page-title">Reported Sites</h1>
+      </div>
 
-          {/* NEW Priority Dropdown */}
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-          >
-            <option value="low">Low</option>
-            <option value="high">High</option>
-          </select>
+      {/* Submit form */}
+      <div className="card reports__form-card">
+        <h2 className="reports__form-title">Submit a Report</h2>
+        <form onSubmit={handleSubmit} className="reports__form">
+          <div className="field reports__field-url">
+            <label className="field__label">URL</label>
+            <input
+              type="url"
+              placeholder="https://suspicious-site.com"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+            />
+          </div>
 
-          {priority === "high" && (
-            <p style={{ color: "red", fontWeight: "bold" }}>
-              ⚠ This report will be sent to cybercrime authorities.
-            </p>
-          )}
+          <div className="field">
+            <label className="field__label">Reason</label>
+            <select value={reason} onChange={(e) => setReason(e.target.value)}>
+              <option>Phishing</option>
+              <option>Fake Store</option>
+              <option>Malware</option>
+              <option>Scam</option>
+              <option>Other</option>
+            </select>
+          </div>
 
-          <button type="submit">Report</button>
+          <div className="field">
+            <label className="field__label">Priority</label>
+            <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+              <option value="low">Low</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <div className="reports__form-actions">
+            {priority === "high" && (
+              <p className="reports__high-priority-warn">
+                ⚠ High priority reports are forwarded to cybercrime authorities.
+              </p>
+            )}
+            <button type="submit" className="btn btn-primary">Submit Report</button>
+          </div>
         </form>
 
-        {message && <p className="message">{message}</p>}
-        {error && <p className="error">{error}</p>}
+        {message && (
+          <p className={`reports__msg reports__msg--${msgType}`}>{message}</p>
+        )}
+        {error && <p className="reports__msg reports__msg--err">{error}</p>}
+      </div>
 
-        {/* Filters */}
-        <div className="filters">
-          <select
-            value={filterReason}
-            onChange={(e) => setFilterReason(e.target.value)}
-          >
-            <option value="all">All Reasons</option>
-            <option value="phishing">Phishing</option>
-            <option value="malware">Malware</option>
-            <option value="fake store">Fake Store</option>
-            <option value="other">Other</option>
-          </select>
+      {/* Filters */}
+      <div className="reports__filters">
+        <select value={filterReason} onChange={(e) => setFilterReason(e.target.value)}>
+          <option value="all">All Reasons</option>
+          <option value="phishing">Phishing</option>
+          <option value="malware">Malware</option>
+          <option value="fake store">Fake Store</option>
+          <option value="scam">Scam</option>
+          <option value="other">Other</option>
+        </select>
 
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-          </select>
+        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
 
+        <div className="reports__search-wrap">
+          <span className="reports__search-icon">🔍</span>
           <input
             type="text"
-            placeholder="Search URL..."
+            placeholder="Search URL…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-bar"
+            className="reports__search"
           />
         </div>
+      </div>
 
-        {/* Reports Table */}
+      {/* Table */}
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {filteredReports.length === 0 ? (
-          <p className="no-data">No reports yet.</p>
+          <p className="reports__empty">No reports match your filters.</p>
         ) : (
-          <table className="reports-table">
-            <thead>
-              <tr>
-                <th style={{ color: "black" }}>URL</th>
-                <th style={{ color: "black" }}>Reason</th>
-                <th style={{ color: "black" }}>Reported By</th>
-                <th style={{ color: "black" }}>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReports.map((report) => (
-                <tr
-                  key={report._id}
-                  className={
-                    report.reason?.toLowerCase() === "phishing"
-                      ? "row-phishing"
-                      : report.reason?.toLowerCase() === "malware"
-                      ? "row-malware"
-                      : ""
-                  }
-                >
-                  <td>{report.url}</td>
-                  <td>
-                    <StatusBadge reason={report.reason} />
-                  </td>
-                  <td>{report.reportedBy?.email || "Unknown"}</td>
-                  <td>{new Date(report.createdAt).toLocaleString()}</td>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>URL</th>
+                  <th>Reason</th>
+                  <th>Reported By</th>
+                  <th>Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredReports.map(report => (
+                  <tr key={report._id}>
+                    <td className="reports__td-url">{report.url}</td>
+                    <td><StatusBadge reason={report.reason} /></td>
+                    <td className="text-muted">{report.reportedBy?.email || "—"}</td>
+                    <td className="text-muted">{new Date(report.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
-    </div>
+
+    </main>
   );
 }
 
