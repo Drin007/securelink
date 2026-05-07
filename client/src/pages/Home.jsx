@@ -1,8 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
+import API from "../utils/api";
 import "../styles/Home.css";
 
-const API = import.meta.env.VITE_API_URL;
 
 function Home() {
   const [url, setUrl] = useState("");
@@ -18,13 +17,10 @@ function Home() {
     setAnalysis(null);
     setMsg("");
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.post(
-        `${API}/api/check-url`,
-        { url },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+
+      const res = await API.post("/api/check-url", { url } );
       setAnalysis(res.data.analysis);
+
     } catch (e) {
       if (e.response?.status === 401) {
         localStorage.removeItem("token");
@@ -40,21 +36,18 @@ function Home() {
 
   const report = async () => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${API}/api/reports`,
-        { url, reason: reportReason },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+
+      await API.post("/api/reports", { url , reason: reportReason,});
       setMsg("Reported successfully");
+
     } catch (e) {
       if (e.response?.status === 401) {
         localStorage.removeItem("token");
         window.location.href = "/login";
         return;
       }
-
       setMsg("Report failed");
+      
     }
   };
 

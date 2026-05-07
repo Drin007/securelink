@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-const API = import.meta.env.VITE_API_URL;
+import API from "../utils/api";
+
 
 const MyScans = () => {
   const [scans, setScans] = useState([]);
@@ -10,22 +10,13 @@ const MyScans = () => {
   useEffect(() => {
     const fetchScans = async () => {
       try {
-        const token = localStorage.getItem('token');
 
-        const response = await axios.get(
-          `${API}/api/scan/history`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+        const response = await API.get("/api/scan/history");
 
         setScans(response.data);
 
       } catch (err) {
 
-        // ✅ ADDED (token expiry handling)
         if (err.response?.status === 401) {
           localStorage.removeItem("token");
           window.location.href = "/login";
@@ -69,12 +60,10 @@ const MyScans = () => {
                 <td>{scan.url}</td>
                 <td>{scan.ip}</td>
 
-                {/* ✅ FIXED (status check) */}
                 <td style={{ color: scan.status === 'Scam' ? 'red' : 'green' }}>
                   {scan.status}
                 </td>
 
-                {/* ✅ FIXED (date bug) */}
                 <td>
                   {new Date(scan.scannedAt).toLocaleString()}
                 </td>

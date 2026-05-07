@@ -9,7 +9,7 @@ function Navbar() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // true if token exists
+    setIsLoggedIn(!!token);
   }, []);
 
   const handleLogout = () => {

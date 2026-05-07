@@ -24,7 +24,6 @@ function Signup() {
 
       if (res.ok && data.token) {
         setToken(data.token);
-        // localStorage.setItem('token', data.token); // change
         navigate('/');
       } else {
         alert(data.msg || 'Signup failed');

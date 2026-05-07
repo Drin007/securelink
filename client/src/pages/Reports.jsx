@@ -1,9 +1,11 @@
 // ... imports stay the same
 import { useEffect, useState, useMemo } from "react";
-import axios from "axios";
+// import axios from "axios";
 import "../styles/Reports.css";
 
-const API = import.meta.env.VITE_API_URL;
+// const API = import.meta.env.VITE_API_URL;
+
+import API from "../utils/api";
 
 function StatusBadge({ reason }) {
   const statusColors = {
@@ -38,10 +40,8 @@ function Reports() {
 
   const fetchReports = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${API}/api/reports`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await API.get("/api/reports");
+
       setReports(res.data);
     } catch (err) {
   if (err.response?.status === 401) {
@@ -57,12 +57,11 @@ function Reports() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${API}/api/reports`,
-        { url, reason, priority },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await API.post("/api/reports", {
+  url,
+  reason,
+  priority,
+});
 
       setMessage("Report submitted successfully");
 
