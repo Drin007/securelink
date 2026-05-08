@@ -1,4 +1,3 @@
-// utils/sslInfo.js
 const tls = require('tls');
 
 function daysLeft(to) {
@@ -7,23 +6,43 @@ function daysLeft(to) {
 
 function getSSLCertificateInfo(hostname) {
   return new Promise((resolve) => {
+    let resolved = false;
+    const done = (val) => {
+      if (!resolved) { resolved = true; resolve(val); }
+    };
+
     const socket = tls.connect(
       {
         host: hostname,
         port: 443,
-        servername: hostname,       // SNI for modern hosts/CDNs
-        rejectUnauthorized: false,  // we only want metadata, not validation here
-        timeout: 8000,
+        servername: hostname,
+        rejectUnauthorized: false,
+        timeout: 10000,
+        minVersion: 'TLSv1.2',
+        ciphers: 'DEFAULT',
       },
       () => {
         try {
           const cert = socket.getPeerCertificate(true);
-          socket.end();
+          socket.destroy();
 
-          if (!cert || Object.keys(cert).length === 0) return resolve(null);
 
-          const subjectCN = cert.subject?.CN || cert.subject?.commonName;
-          const issuerCN  = cert.issuer?.CN || cert.issuer?.commonName;
+          if (!cert || Object.keys(cert).length === 0) {
+            return done({
+              subjectCN:        null,
+              issuerCN:         null,
+              validFrom:        null,
+              validTo:          null,
+              altNames:         [],
+              daysRemaining:    null,
+              isExpired:        false,
+              isSelfSigned:     false,
+              detailsAvailable: false,
+            });
+          }
+
+          const subjectCN = cert.subject?.CN || null;
+          const issuerCN  = cert.issuer?.CN  || null;
           const validFrom = cert.valid_from ? new Date(cert.valid_from) : null;
           const validTo   = cert.valid_to   ? new Date(cert.valid_to)   : null;
 
@@ -31,27 +50,25 @@ function getSSLCertificateInfo(hostname) {
             ? cert.subjectaltname.replace(/DNS:/g, '').split(',').map(s => s.trim())
             : [];
 
-          const data = {
+          done({
             subjectCN,
             issuerCN,
             validFrom,
             validTo,
             altNames,
-            daysRemaining: validTo ? daysLeft(validTo) : null,
-            isExpired: validTo ? validTo < new Date() : null,
-            // crude self-signed heuristic
-            isSelfSigned: subjectCN && issuerCN ? subjectCN === issuerCN : null,
-          };
-
-          resolve(data);
+            daysRemaining:    validTo ? daysLeft(validTo) : null,
+            isExpired:        validTo ? validTo < new Date() : false,
+            isSelfSigned:     subjectCN && issuerCN ? subjectCN === issuerCN : false,
+            detailsAvailable: true,
+          });
         } catch {
-          resolve(null);
+          done(null);
         }
       }
     );
 
-    socket.on('error', () => resolve(null));
-    socket.on('timeout', () => { socket.destroy(); resolve(null); });
+    socket.on('error',   () => done(null));
+    socket.on('timeout', () => { socket.destroy(); done(null); });
   });
 }
 

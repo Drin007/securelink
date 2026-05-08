@@ -170,7 +170,6 @@ function Reports() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {filteredReports.length === 0 ? (
           <p className="reports__empty">No reports match your filters.</p>

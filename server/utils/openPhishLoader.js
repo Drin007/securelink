@@ -9,7 +9,7 @@ async function loadOpenPhish() {
     const text = await res.text();
     const urls = text.split('\n').filter(Boolean);
     openPhishSet = new Set(urls);
-    console.log(`✅ Loaded ${urls.length} OpenPhish URLs`);
+    console.log(`🍀🍀 Loaded ${urls.length} OpenPhish URLs`);
   } catch (err) {
     console.error('❌ Failed to fetch OpenPhish feed:', err.message);
   }

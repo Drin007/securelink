@@ -39,14 +39,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="stat-grid">
         <StatCard value={stats.total}     label="Total Scans"    accent="var(--accent2)" />
         <StatCard value={stats.safe}      label="Safe URLs"      accent="var(--safe)" />
         <StatCard value={stats.dangerous} label="Dangerous URLs" accent="var(--danger)" />
       </div>
 
-      {/* Table */}
       <div className="card dashboard__table-card">
         <h2 className="dashboard__table-title">Recent Scans</h2>
 

@@ -1,4 +1,3 @@
-// controllers/reportController.js
 exports.createReport = async (req, res) => {
   try {
     const { url, reason } = req.body;

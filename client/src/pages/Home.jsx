@@ -65,7 +65,6 @@ function Home() {
   return (
     <main className="page home">
 
-      {/* ── Hero ── */}
       <section className="hero">
         <p className="hero__eyebrow">URL Safety Scanner</p>
         <h1 className="hero__title">Is this link safe<span className="hero__dot">?</span></h1>
@@ -102,11 +101,9 @@ function Home() {
         )}
       </section>
 
-      {/* ── Result ── */}
       {analysis && (
         <section className="result card">
 
-          {/* Header */}
           <div className="result__header">
             <div className="result__title-row">
               <div className={`result__status-dot result__status-dot--${isSafe ? 'safe' : 'danger'}`} />
@@ -123,7 +120,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Quick report bar */}
           <div className="result__report-bar">
             <span className="result__report-label">Flag this URL:</span>
             <select
@@ -141,7 +137,6 @@ function Home() {
 
           <hr className="divider" />
 
-          {/* Details grid */}
           <div className="detail-grid">
 
             <div className="detail-section">
@@ -165,14 +160,19 @@ function Home() {
 
             <div className="detail-section">
               <h4 className="detail-section__title">SSL Certificate</h4>
-              {analysis.ssl ? <>
-                <InfoRow label="Issuer"    value={analysis.ssl.issuerCN} />
-                <InfoRow label="Subject"   value={analysis.ssl.subjectCN} />
-                <InfoRow label="Valid to"  value={analysis.ssl.validTo ? new Date(analysis.ssl.validTo).toLocaleDateString() : null} />
-                <InfoRow label="Days left" value={analysis.ssl.daysRemaining} />
-                <InfoRow label="Expired"   value={analysis.checks?.sslExpired ? "Yes" : "No"} />
-                <InfoRow label="Self-signed" value={analysis.checks?.sslSelfSigned ? "Yes" : "No"} />
-              </> : (
+              {analysis.ssl ? (
+                analysis.ssl.detailsAvailable === false ? (
+
+                  <InfoRow label="Status" value="✓ Valid (details withheld by CDN)" />
+                ) : <>
+                  <InfoRow label="Issuer"      value={analysis.ssl.issuerCN} />
+                  <InfoRow label="Subject"     value={analysis.ssl.subjectCN} />
+                  <InfoRow label="Valid to"    value={analysis.ssl.validTo ? new Date(analysis.ssl.validTo).toLocaleDateString() : null} />
+                  <InfoRow label="Days left"   value={analysis.ssl.daysRemaining} />
+                  <InfoRow label="Expired"     value={analysis.checks?.sslExpired ? "Yes" : "No"} />
+                  <InfoRow label="Self-signed" value={analysis.checks?.sslSelfSigned ? "Yes" : "No"} />
+                </>
+              ) : (
                 <p className="text-muted" style={{ fontSize: 13, marginTop: 6 }}>Not available — non-HTTPS or handshake failed</p>
               )}
             </div>

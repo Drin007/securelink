@@ -16,10 +16,10 @@ router.post('/', protect, async (req, res) => {
     await newReport.save();
 
 
-    console.log(`🚨 Report received for: ${url}`);
+    console.log(`👮🏻 Report received for: ${url}`);
     res.status(201).json({ message: 'Report submitted successfully' });
   } catch (err) {
-    console.error('❌ Report failed:', err);
+    console.error('❌ ❌ Report failed:', err);
     res.status(500).json({ message: 'Failed to submit report' });
   }
 });

@@ -20,7 +20,6 @@
   border-bottom-color: var(--border);
 }
 
-/* Logo */
 .nav-logo {
   display: flex;
   align-items: center;
@@ -37,7 +36,6 @@
 }
 .nav-logo__accent { color: var(--accent2); }
 
-/* Links */
 .nav-links {
   display: flex;
   align-items: center;
@@ -65,7 +63,6 @@
   padding: 0.5rem 1.1rem;
 }
 
-/* Mobile */
 @media (max-width: 600px) {
   .navbar { padding: 0 1.25rem; }
   .nav-logo__text { font-size: 0.95rem; }

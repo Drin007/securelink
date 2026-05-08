@@ -1,4 +1,4 @@
-const User = require("../models/User"); // add this at top
+const User = require("../models/User"); 
 const jwt = require("jsonwebtoken");
 
 
@@ -9,10 +9,10 @@ const protect = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded.userId).select("-password"); // add on 
-    if (!user) return res.status(404).json({ msg: "User not found" }); // add on 2
+    const user = await User.findById(decoded.userId).select("-password"); 
+    if (!user) return res.status(404).json({ msg: "User not found" }); 
 
-    req.user = user; // here changes being made
+    req.user = user; 
 
     next();
 

@@ -17,7 +17,6 @@ router.post('/check-url', protect, async (req, res) => {
       return res.status(500).json(analysis);
     }
 
-    // Determine isScam from your logic or passed value (this is minimal)
     const scan = new Scan({
       user: req.user._id,
       url,

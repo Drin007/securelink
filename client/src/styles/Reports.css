@@ -1,4 +1,4 @@
-/* NAVIGATION BAR */
+
 .navbar {
   background: #1e293b;
   color: white;
@@ -20,7 +20,6 @@
   text-decoration: underline;
 }
 
-/* PAGE LAYOUT */
 .reports-container {
   max-width: 900px;
   margin: 20px auto;
@@ -31,7 +30,6 @@
   margin-bottom: 20px;
 }
 
-/* FORM STYLING */
 .report-form {
   display: flex;
   gap: 10px;
@@ -54,7 +52,6 @@
   background: #1d4ed8;
 }
 
-/* FILTERS */
 .filters {
   display: flex;
   gap: 10px;
@@ -67,7 +64,6 @@
   font-size: 0.9rem;
 }
 
-/* STATUS BADGES */
 .status-badge {
   padding: 4px 8px;
   border-radius: 12px;
@@ -76,7 +72,6 @@
   text-transform: capitalize;
 }
 
-/* TABLE */
 .reports-table {
   width: 100%;
   border-collapse: collapse;
@@ -101,7 +96,6 @@
   background: #242481;
 }
 
-/* MESSAGES */
 .message {
   color: green;
   text-align: center;
