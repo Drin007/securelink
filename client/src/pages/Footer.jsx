@@ -11,8 +11,8 @@ function Footer() {
 
         <div className="footer__contact">
           <span className="footer__contact-label">Get in touch</span>
-          <a href="mailto:tusharmehra@example.com" className="footer__email">
-            tusharmehra@example.com
+          <a href="mailto:tusharmehra0255@gmail.com" className="footer__email">
+            tusharmehra0255@gmail.com
           </a>
         </div>
       </div>
